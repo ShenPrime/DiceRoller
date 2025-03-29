@@ -7,14 +7,16 @@ A Discord bot that helps you roll dice for D&D and other tabletop games. Support
 - Roll any standard D&D dice (d4, d6, d8, d10, d12, d20, d100)
 - Roll multiple dice at once
 - Support for advantage and disadvantage on d20 rolls
+- Keep highest rolls using the 'kh' modifier
 - Shows individual roll results and totals
 - Beautiful embedded messages for roll results
 
 ## Commands
 
-- `!roll [number]d[sides]` - Roll dice (e.g., `!roll 2d6`, `!roll d20`)
-- `!roll d20 advantage` - Roll with advantage
-- `!roll d20 disadvantage` - Roll with disadvantage
+- `/roll dice:[number]d[sides]` - Roll dice (e.g., `/roll dice:2d6`, `/roll dice:d20`)
+- `/roll dice:[number]d[sides]kh[number]` - Roll dice and keep highest rolls (e.g., `/roll dice:4d6kh3`)
+- `/roll dice:d20 modifier:advantage` - Roll with advantage
+- `/roll dice:d20 modifier:disadvantage` - Roll with disadvantage
 
 ## Setup
 
@@ -35,8 +37,9 @@ A Discord bot that helps you roll dice for D&D and other tabletop games. Support
 
 ## Examples
 
-- `!roll 2d6` - Roll two six-sided dice
-- `!roll d20` - Roll one twenty-sided die
-- `!roll 3d8` - Roll three eight-sided dice
-- `!roll d20 advantage` - Roll d20 with advantage
-- `!roll d20 disadvantage` - Roll d20 with disadvantage
+- `/roll dice:2d6` - Roll two six-sided dice
+- `/roll dice:d20` - Roll one twenty-sided die
+- `/roll dice:3d8` - Roll three eight-sided dice
+- `/roll dice:4d6kh3` - Roll four six-sided dice and keep the highest three (common for D&D character creation)
+- `/roll dice:d20 modifier:advantage` - Roll d20 with advantage
+- `/roll dice:d20 modifier:disadvantage` - Roll d20 with disadvantage
