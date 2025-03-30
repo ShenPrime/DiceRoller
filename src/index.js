@@ -164,6 +164,32 @@ Crit %: ${diceStat.crit_percentage}%`,
     return;
   }
 
+  if (interaction.commandName === 'delete_server_data') {
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+      return interaction.reply({ content: 'You need administrator permissions to use this command!', ephemeral: true });
+    }
+    
+    try {
+      await db.deleteServerData(interaction.guildId);
+      await interaction.reply({ content: 'All server data has been deleted successfully!', ephemeral: true });
+    } catch (error) {
+      console.error('Error deleting server data:', error);
+      await interaction.reply({ content: 'There was an error deleting server data!', ephemeral: true });
+    }
+    return;
+  }
+
+  if (interaction.commandName === 'delete_user_data') {
+    try {
+      await db.deleteUserData(interaction.user.id, interaction.guildId);
+      await interaction.reply({ content: 'Your personal roll data has been deleted successfully!', ephemeral: true });
+    } catch (error) {
+      console.error('Error deleting user data:', error);
+      await interaction.reply({ content: 'There was an error deleting your data!', ephemeral: true });
+    }
+    return;
+  }
+
   if (interaction.commandName !== 'roll') return;
 
   const dice = interaction.options.getString('dice');
