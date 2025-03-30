@@ -2,6 +2,24 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 const commands = [
   new SlashCommandBuilder()
+    .setName('explain')
+    .setDescription('Get detailed explanation and usage examples for commands')
+    .addStringOption(option =>
+      option
+        .setName('command')
+        .setDescription('The command to explain')
+        .setRequired(true)
+        .addChoices(
+          { name: 'help', value: 'help' },
+          { name: 'setup', value: 'setup' },
+          { name: 'delete_server_data', value: 'delete_server_data' },
+          { name: 'delete_user_data', value: 'delete_user_data' },
+          { name: 'leaderboard', value: 'leaderboard' },
+          { name: 'roll', value: 'roll' },
+          { name: 'stats', value: 'stats' }
+        )
+    ),
+  new SlashCommandBuilder()
     .setName('help')
     .setDescription('Display all available commands with usage examples'),
   new SlashCommandBuilder()

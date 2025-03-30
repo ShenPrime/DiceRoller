@@ -193,6 +193,75 @@ Crit %: ${diceStat.crit_percentage}%`,
     return;
   }
 
+  if (interaction.commandName === 'explain') {
+    const commandToExplain = interaction.options.getString('command');
+    
+    const explanations = {
+      help: {
+        title: '🎲 Help Command',
+        description: 'Displays all available commands with brief usage examples.',
+        examples: ['/help']
+      },
+      setup: {
+        title: '⚙️ Setup Command',
+        description: 'Initializes the bot for this server. This must be run before any other commands will work.',
+        examples: ['/setup'],
+        note: '*Admin only*'
+      },
+      roll: {
+        title: '🎲 Roll Command',
+        description: 'Rolls various types of dice with different modifiers.',
+        examples: [
+          '/roll dice:2d6',
+          '/roll dice:4d6kh3',
+          '/roll dice:d20 modifier:advantage',
+          '/roll dice:d20 modifier:disadvantage'
+        ]
+      },
+      leaderboard: {
+        title: '🏆 Leaderboard Command',
+        description: 'Shows server-wide dice rolling statistics, including top players by number of rolls and critical hits.\n\n**Roll%** shows what percentage of rolls are at or above the average roll for that die type (e.g. 11+ on d20).',
+        examples: ['/leaderboard', '/leaderboard limit:5']
+      },
+      stats: {
+        title: '📊 Stats Command',
+        description: 'Displays detailed dice rolling statistics for yourself or another user.\n\n**Roll%** shows what percentage of your rolls are at or above the average roll for that die type (e.g. 11+ on d20).',
+        examples: ['/stats', '/stats user:@username']
+      },
+      delete_user_data: {
+        title: '🗑️ Delete User Data',
+        description: 'Permanently deletes your personal roll data for this server.',
+        examples: ['/delete_user_data']
+      },
+      delete_server_data: {
+        title: '⚠️ Delete Server Data',
+        description: 'Permanently deletes ALL roll data for this server.',
+        examples: ['/delete_server_data'],
+        note: '*Admin only*'
+      }
+    };
+    
+    const commandInfo = explanations[commandToExplain];
+    const embed = new EmbedBuilder()
+      .setColor('#0099ff')
+      .setTitle(commandInfo.title)
+      .setDescription(commandInfo.description)
+      .addFields({
+        name: 'Usage Examples',
+        value: commandInfo.examples.map(ex => `• ${ex}`).join('\n')
+      });
+      
+    if (commandInfo.note) {
+      embed.addFields({
+        name: 'Note',
+        value: commandInfo.note
+      });
+    }
+    
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+    return;
+  }
+  
   if (interaction.commandName === 'help') {
     const embed = new EmbedBuilder()
       .setColor('#0099ff')
