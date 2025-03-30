@@ -121,8 +121,9 @@ Crit %: ${diceStat.crit_percentage}%`,
     .setColor('#0099ff')
     .setTitle('🎲 Dice Roll');
 
+  let roll;
   if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
-    const roll = parsed.type === 'advantage' ? rollWithAdvantage() : rollWithDisadvantage();
+    roll = parsed.type === 'advantage' ? rollWithAdvantage() : rollWithDisadvantage();
     embed.setDescription(`Rolling with ${parsed.type}...`)
       .addFields(
         { name: 'Rolls', value: roll.rolls.join(', '), inline: true },
