@@ -190,6 +190,54 @@ Crit %: ${diceStat.crit_percentage}%`,
     return;
   }
 
+  if (interaction.commandName === 'help') {
+    const embed = new EmbedBuilder()
+      .setColor('#0099ff')
+      .setTitle('🎲 Dice Roller Bot Commands')
+      .setDescription('Here are all available commands with usage examples:')
+      .addFields(
+        {
+          name: '/setup',
+          value: 'Initialize the bot for this server\n*Admin only*'
+        },
+        {
+          name: '/roll dice:[number]d[sides]',
+          value: 'Roll dice (e.g., `/roll dice:2d6`, `/roll dice:d20`)'
+        },
+        {
+          name: '/roll dice:[number]d[sides]kh[number]',
+          value: 'Roll dice and keep highest rolls (e.g., `/roll dice:4d6kh3`)'
+        },
+        {
+          name: '/roll dice:d20 modifier:advantage',
+          value: 'Roll with advantage'
+        },
+        {
+          name: '/roll dice:d20 modifier:disadvantage',
+          value: 'Roll with disadvantage'
+        },
+        {
+          name: '/leaderboard [limit]',
+          value: 'View server-wide dice rolling statistics (default: 10 players)'
+        },
+        {
+          name: '/stats [user]',
+          value: 'View dice rolling statistics for yourself or another user'
+        },
+        {
+          name: '/delete_user_data',
+          value: 'Delete your personal roll data for this server'
+        },
+        {
+          name: '/delete_server_data',
+          value: 'Delete all server roll data\n*Admin only*'
+        }
+      );
+
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+    return;
+  }
+
   if (interaction.commandName !== 'roll') return;
 
   const dice = interaction.options.getString('dice');

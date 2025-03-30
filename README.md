@@ -13,10 +13,16 @@ A Discord bot that helps you roll dice for D&D and other tabletop games. Support
 
 ## Commands
 
+- `/setup` - Initialize the bot for this server (Admin only)
 - `/roll dice:[number]d[sides]` - Roll dice (e.g., `/roll dice:2d6`, `/roll dice:d20`)
 - `/roll dice:[number]d[sides]kh[number]` - Roll dice and keep highest rolls (e.g., `/roll dice:4d6kh3`)
 - `/roll dice:d20 modifier:advantage` - Roll with advantage
 - `/roll dice:d20 modifier:disadvantage` - Roll with disadvantage
+- `/leaderboard [limit]` - View server-wide dice rolling statistics (default: 10 players)
+- `/stats [user]` - View dice rolling statistics for yourself or another user
+- `/delete_user_data` - Delete your personal roll data for this server
+- `/delete_server_data` - Delete all server roll data (Admin only)
+- `/help` - Display all available commands with usage examples
 
 ## Setup
 

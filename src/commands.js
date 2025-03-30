@@ -2,6 +2,9 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 const commands = [
   new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('Display all available commands with usage examples'),
+  new SlashCommandBuilder()
     .setName('setup')
     .setDescription('Initialize the bot for this server')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
