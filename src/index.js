@@ -122,17 +122,20 @@ Crit %: ${diceStat.crit_percentage}%`,
     .setTitle('🎲 Dice Roll');
 
   let roll;
+  let rolls = [];
+  let total = 0;
+  let result;
+
   if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
     roll = parsed.type === 'advantage' ? rollWithAdvantage() : rollWithDisadvantage();
+    rolls = roll.rolls;
+    result = roll.result;
     embed.setDescription(`Rolling with ${parsed.type}...`)
       .addFields(
-        { name: 'Rolls', value: roll.rolls.join(', '), inline: true },
-        { name: 'Result', value: roll.result.toString(), inline: true }
+        { name: 'Rolls', value: rolls.join(', '), inline: true },
+        { name: 'Result', value: result.toString(), inline: true }
       );
   } else {
-    const rolls = [];
-    let total = 0;
-
     for (let i = 0; i < parsed.count; i++) {
       const roll = rollDice(parsed.sides);
       rolls.push(roll);
@@ -161,7 +164,7 @@ Crit %: ${diceStat.crit_percentage}%`,
   try {
     // Update roll statistics in database
     if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
-      await db.updateRollStats(interaction.user.id, 20, roll.result);
+      await db.updateRollStats(interaction.user.id, 20, result);
     } else if (!parsed.keepHighest) {
       for (const roll of rolls) {
         await db.updateRollStats(interaction.user.id, parsed.sides, roll);
