@@ -63,6 +63,21 @@ function parseRollCommand(command) {
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  if (interaction.commandName === 'setup') {
+    try {
+      const success = await db.createServerSchema(interaction.guildId);
+      if (success) {
+        await interaction.reply({ content: 'Server successfully initialized! The bot is now ready to track dice rolls.', ephemeral: true });
+      } else {
+        await interaction.reply({ content: 'Server initialization failed. Please try again later.', ephemeral: true });
+      }
+    } catch (error) {
+      console.error('Error initializing server:', error);
+      await interaction.reply({ content: 'There was an error initializing the server!', ephemeral: true });
+    }
+    return;
+  }
+
   if (interaction.commandName === 'leaderboard') {
     try {
       const limit = interaction.options.getInteger('limit') || 20;
