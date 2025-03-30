@@ -73,14 +73,30 @@ client.on('interactionCreate', async (interaction) => {
         .setTitle('🏆 Dice Rolling Leaderboard')
         .setDescription('Server Dice Rolling Statistics');
 
-      // Overall Leaderboard
-      let overallField = '```\nRank User   Rolls Crits Crit%\n------------------------------\n';
+      // Get rank emojis for top positions
+      const getRankEmoji = (position) => {
+        const emojis = ['👑', '⭐', '✨'];
+        return position < emojis.length ? emojis[position] : `${position + 1}`;
+      };
+
+      embed.setDescription(`🎲 **Server Leaderboard**\n*Top ${leaderboards.overallLeaderboard.length} Players*`);
+
+      // Add individual player stats as separate fields
       for (const [index, stats] of leaderboards.overallLeaderboard.entries()) {
         const user = await client.users.fetch(stats.user_id);
-        overallField += `${String(index + 1)} ${user.username.padEnd(6)} ${String(stats.total_rolls).padEnd(4)} ${String(stats.total_crits).padEnd(4)} ${stats.overall_crit_percentage}%\n`;
+        const rankDisplay = getRankEmoji(index);
+        const critRate = stats.overall_crit_percentage;
+        
+        // Dynamic performance indicators
+        const critEmoji = critRate >= 15 ? '🔥' : (critRate >= 10 ? '⚡' : '🎯');
+        const progressBar = '▰'.repeat(Math.min(10, Math.floor(critRate / 5))) + '▱'.repeat(Math.max(0, 10 - Math.floor(critRate / 5)));
+        
+        embed.addFields({
+          name: `${rankDisplay} ${user.username}`,
+          value: `${critEmoji} **${stats.total_rolls}** rolls • **${stats.total_crits}** crits\n${progressBar} **${critRate}%** crit rate`,
+          inline: false
+        });
       }
-      overallField += '```';
-      embed.addFields({ name: '📊 Server Statistics', value: overallField || 'No data available' });
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
