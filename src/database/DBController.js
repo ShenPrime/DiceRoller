@@ -116,7 +116,7 @@ class DBController {
         }
     }
 
-    async getLeaderboard() {
+    async getLeaderboard(limit = 10) {
         const overallLeaderboard = `
             SELECT 
                 user_id,
@@ -126,7 +126,8 @@ class DBController {
                 ROUND((total_crits::float / total_rolls * 100)::numeric, 2) as overall_crit_percentage
             FROM user_overall_stats
             WHERE total_rolls > 0
-            ORDER BY total_rolls DESC;
+            ORDER BY total_rolls DESC
+            LIMIT $1;
         `;
 
         const diceLeaderboards = `
@@ -139,12 +140,13 @@ class DBController {
                 ROUND((total_crits::float / total_rolls * 100)::numeric, 2) as crit_percentage
             FROM user_dice_stats
             WHERE total_rolls > 0
-            ORDER BY total_rolls DESC;
+            ORDER BY total_rolls DESC
+            LIMIT $1;
         `;
 
         const [overallResults, diceResults] = await Promise.all([
-            this.query(overallLeaderboard),
-            this.query(diceLeaderboards)
+            this.query(overallLeaderboard, [limit]),
+            this.query(diceLeaderboards, [limit])
         ]);
 
         return {

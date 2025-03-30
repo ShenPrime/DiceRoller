@@ -3,14 +3,13 @@ const { SlashCommandBuilder } = require('discord.js');
 const commands = [
   new SlashCommandBuilder()
     .setName('leaderboard')
-    .setDescription('View the top dice rollers')
+    .setDescription('View server-wide dice rolling statistics')
     .addIntegerOption(option =>
       option
         .setName('limit')
-        .setDescription('Number of top players to show (default: 5)')
+        .setDescription('Number of players to show (default: 10)')
         .setMinValue(1)
-        .setMaxValue(10)
-        .setRequired(false)
+        .setMaxValue(25)
     ),
   new SlashCommandBuilder()
     .setName('roll')

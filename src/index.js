@@ -65,7 +65,8 @@ client.on('interactionCreate', async (interaction) => {
 
   if (interaction.commandName === 'leaderboard') {
     try {
-      const leaderboards = await db.getLeaderboard();
+      const limit = interaction.options.getInteger('limit') || 10;
+      const leaderboards = await db.getLeaderboard(limit);
       
       const embed = new EmbedBuilder()
         .setColor('#0099ff')
