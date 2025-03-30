@@ -98,7 +98,8 @@ client.on('interactionCreate', async (interaction) => {
 
       // Add individual player stats as separate fields
       for (const [index, stats] of leaderboards.overallLeaderboard.entries()) {
-        const user = await client.users.fetch(stats.user_id);
+        const member = await interaction.guild.members.fetch(stats.user_id);
+        const displayName = member.nickname || member.user.username;
         const rankDisplay = getRankEmoji(index);
         const critRate = stats.overall_crit_percentage;
         
@@ -107,7 +108,7 @@ client.on('interactionCreate', async (interaction) => {
         const progressBar = '▰'.repeat(Math.min(10, Math.floor(critRate / 5))) + '▱'.repeat(Math.max(0, 10 - Math.floor(critRate / 5)));
         
         embed.addFields({
-          name: `${rankDisplay} ${user.username}`,
+          name: `${rankDisplay} ${displayName}`,
           value: `${critEmoji} **${stats.total_rolls}** rolls • **${stats.total_crits}** crits\n${progressBar} **${critRate}%** crit rate`,
           inline: false
         });
@@ -130,9 +131,11 @@ client.on('interactionCreate', async (interaction) => {
         return interaction.reply({ content: `No roll statistics found for ${targetUser.username}`, ephemeral: true });
       }
 
+      const member = await interaction.guild.members.fetch(targetUser.id);
+      const displayName = member.nickname || targetUser.username;
       const embed = new EmbedBuilder()
         .setColor('#0099ff')
-        .setTitle(`🎲 Roll Statistics for ${targetUser.username}`)
+        .setTitle(`🎲 Roll Statistics for ${displayName}`)
         .setDescription('Here are your dice rolling statistics:')
         .addFields(
           {
