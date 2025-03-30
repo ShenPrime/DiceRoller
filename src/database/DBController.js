@@ -119,7 +119,7 @@ class DBController {
         }
     }
 
-    async getLeaderboard(serverId, limit = 10) {
+    async getLeaderboard(serverId, limit = 20) {
         const overallLeaderboard = `
             SELECT 
                 user_id,
