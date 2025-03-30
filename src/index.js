@@ -74,10 +74,10 @@ client.on('interactionCreate', async (interaction) => {
         .setDescription('Server Dice Rolling Statistics');
 
       // Overall Leaderboard
-      let overallField = '```\n  Rank      User          Rolls      Crits     Crit %  \n---------------------------------------------------\n';
+      let overallField = '```\nRank User   Rolls Crits Crit%\n------------------------------\n';
       for (const [index, stats] of leaderboards.overallLeaderboard.entries()) {
         const user = await client.users.fetch(stats.user_id);
-        overallField += `  ${String(index + 1).padStart(4)}      ${user.username.padEnd(12)}  ${String(stats.total_rolls).padStart(8)}    ${String(stats.total_crits).padStart(8)}     ${String(stats.overall_crit_percentage).padStart(5)}%  \n`;
+        overallField += `${String(index + 1)} ${user.username.padEnd(6)} ${String(stats.total_rolls).padEnd(4)} ${String(stats.total_crits).padEnd(4)} ${stats.overall_crit_percentage}%\n`;
       }
       overallField += '```';
       embed.addFields({ name: '📊 Server Statistics', value: overallField || 'No data available' });
