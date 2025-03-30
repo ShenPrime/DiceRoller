@@ -218,10 +218,14 @@ class DBController {
         
         const deleteServerDiceStats = `DELETE FROM ${schemaPrefix}user_dice_stats WHERE server_id = $1;`;
         const deleteServerOverallStats = `DELETE FROM ${schemaPrefix}user_overall_stats WHERE server_id = $1;`;
+        const deletePublicDiceStats = `DELETE FROM user_dice_stats WHERE server_id = $1;`;
+        const deletePublicOverallStats = `DELETE FROM user_overall_stats WHERE server_id = $1;`;
 
         await Promise.all([
             this.query(deleteServerDiceStats, [serverId]),
-            this.query(deleteServerOverallStats, [serverId])
+            this.query(deleteServerOverallStats, [serverId]),
+            this.query(deletePublicDiceStats, [serverId]),
+            this.query(deletePublicOverallStats, [serverId])
         ]);
     }
 
