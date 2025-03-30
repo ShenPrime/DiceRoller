@@ -1,6 +1,17 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 const commands = [
+  new SlashCommandBuilder()
+    .setName('setup')
+    .setDescription('Initialize the bot for this server')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  new SlashCommandBuilder()
+    .setName('delete_server_data')
+    .setDescription('Delete all dice roll data for this server')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  new SlashCommandBuilder()
+    .setName('delete_user_data')
+    .setDescription('Delete your dice roll data for this server'),
   new SlashCommandBuilder()
     .setName('leaderboard')
     .setDescription('View server-wide dice rolling statistics')

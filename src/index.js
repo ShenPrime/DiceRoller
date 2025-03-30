@@ -63,6 +63,52 @@ function parseRollCommand(command) {
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  if (interaction.commandName === 'setup') {
+    if (!interaction.memberPermissions.has('Administrator')) {
+      return interaction.reply({ content: 'You need Administrator permissions to use this command.', ephemeral: true });
+    }
+
+    try {
+      const isInitialized = await db.isServerInitialized(interaction.guildId);
+      if (isInitialized) {
+        return interaction.reply({ content: 'This server is already set up!', ephemeral: true });
+      }
+
+      await db.initializeTables();
+      await interaction.reply({ content: 'Server successfully initialized for dice rolling!', ephemeral: true });
+    } catch (error) {
+      console.error('Error during server setup:', error);
+      await interaction.reply({ content: 'There was an error setting up the server!', ephemeral: true });
+    }
+    return;
+  }
+
+  if (interaction.commandName === 'delete_server_data') {
+    if (!interaction.memberPermissions.has('Administrator')) {
+      return interaction.reply({ content: 'You need Administrator permissions to use this command.', ephemeral: true });
+    }
+
+    try {
+      await db.deleteServerData(interaction.guildId);
+      await interaction.reply({ content: 'All server dice roll data has been deleted.', ephemeral: true });
+    } catch (error) {
+      console.error('Error deleting server data:', error);
+      await interaction.reply({ content: 'There was an error deleting server data!', ephemeral: true });
+    }
+    return;
+  }
+
+  if (interaction.commandName === 'delete_user_data') {
+    try {
+      await db.deleteUserData(interaction.user.id, interaction.guildId);
+      await interaction.reply({ content: 'Your dice roll data for this server has been deleted.', ephemeral: true });
+    } catch (error) {
+      console.error('Error deleting user data:', error);
+      await interaction.reply({ content: 'There was an error deleting your data!', ephemeral: true });
+    }
+    return;
+  }
+
   if (interaction.commandName === 'leaderboard') {
     try {
       const limit = interaction.options.getInteger('limit') || 10;
@@ -109,7 +155,7 @@ client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === 'stats') {
     const targetUser = interaction.options.getUser('user') || interaction.user;
     try {
-      const stats = await db.getUserStats(targetUser.id);
+      const stats = await db.getUserStats(targetUser.id, interaction.guildId);
       
       if (!stats.overallStats) {
         return interaction.reply({ content: `No roll statistics found for ${targetUser.username}`, ephemeral: true });
@@ -207,14 +253,14 @@ Crit %: ${diceStat.crit_percentage}%`,
   try {
     // Update roll statistics in database
     if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
-      await db.updateRollStats(interaction.user.id, 20, result);
+      await db.updateRollStats(interaction.user.id, interaction.guildId, 20, result);
     } else if (!parsed.keepHighest) {
       for (const roll of rolls) {
-        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+        await db.updateRollStats(interaction.user.id, interaction.guildId, parsed.sides, roll);
       }
     } else {
       for (const roll of rolls.slice(0, parsed.keepHighest)) {
-        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+        await db.updateRollStats(interaction.user.id, interaction.guildId, parsed.sides, roll);
       }
     }
 
