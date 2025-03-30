@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes } = require('discord.js');
 const commands = require('./commands');
+const db = require('./database/DBController');
 
 const client = new Client({
   intents: [
@@ -61,6 +62,50 @@ function parseRollCommand(command) {
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'stats') {
+    const targetUser = interaction.options.getUser('user') || interaction.user;
+    try {
+      const stats = await db.getUserStats(targetUser.id);
+      
+      if (!stats.overallStats) {
+        return interaction.reply({ content: `No roll statistics found for ${targetUser.username}`, ephemeral: true });
+      }
+
+      const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle(`🎲 Roll Statistics for ${targetUser.username}`)
+        .setDescription('Here are your dice rolling statistics:')
+        .addFields(
+          {
+            name: '📊 Overall Stats',
+            value: `Total Rolls: ${stats.overallStats.total_rolls}
+Critical Hits: ${stats.overallStats.total_crits}
+Overall Roll %: ${stats.overallStats.overall_roll_percentage}%
+Critical Hit %: ${stats.overallStats.overall_crit_percentage}%`
+          }
+        );
+
+      // Add individual dice stats
+      for (const diceStat of stats.diceStats) {
+        embed.addFields({
+          name: `d${diceStat.dice_type} Stats`,
+          value: `Rolls: ${diceStat.total_rolls}
+Crits: ${diceStat.total_crits}
+Roll %: ${diceStat.roll_percentage}%
+Crit %: ${diceStat.crit_percentage}%`,
+          inline: true
+        });
+      }
+
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      await interaction.reply({ content: 'There was an error fetching the statistics!', ephemeral: true });
+    }
+    return;
+  }
+
   if (interaction.commandName !== 'roll') return;
 
   const dice = interaction.options.getString('dice');
@@ -113,6 +158,19 @@ client.on('interactionCreate', async (interaction) => {
   }
 
   try {
+    // Update roll statistics in database
+    if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
+      await db.updateRollStats(interaction.user.id, 20, roll.result);
+    } else if (!parsed.keepHighest) {
+      for (const roll of rolls) {
+        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+      }
+    } else {
+      for (const roll of rolls.slice(0, parsed.keepHighest)) {
+        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+      }
+    }
+
     await interaction.reply({ embeds: [embed] });
   } catch (error) {
     console.error('Error handling slash command:', error);
@@ -132,8 +190,11 @@ client.once('ready', async () => {
       { body: commands }
     );
     console.log('Successfully registered application commands.');
+
+    // Initialize database connection
+    await db.connect();
   } catch (error) {
-    console.error('Error registering application commands:', error);
+    console.error('Error during initialization:', error);
   }
 });
 

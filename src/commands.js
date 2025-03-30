@@ -19,6 +19,15 @@ const commands = [
           { name: 'disadvantage', value: 'disadvantage' }
         )
     ),
+  new SlashCommandBuilder()
+    .setName('stats')
+    .setDescription('View your dice rolling statistics')
+    .addUserOption(option =>
+      option
+        .setName('user')
+        .setDescription('User to check stats for (defaults to yourself)')
+        .setRequired(false)
+    ),
 ];
 
 module.exports = commands;
