@@ -99,7 +99,7 @@ client.on('interactionCreate', async (interaction) => {
       // Add individual player stats as separate fields
       for (const [index, stats] of leaderboards.overallLeaderboard.entries()) {
         const member = await interaction.guild.members.fetch(stats.user_id);
-        const displayName = member.nickname || member.user.username;
+        const displayName = member.nickname || member.user.displayName || member.user.username;
         const rankDisplay = getRankEmoji(index);
         const critRate = stats.overall_crit_percentage;
         
@@ -132,7 +132,7 @@ client.on('interactionCreate', async (interaction) => {
       }
 
       const member = await interaction.guild.members.fetch(targetUser.id);
-      const displayName = member.nickname || targetUser.username;
+      const displayName = member.nickname || targetUser.displayName || targetUser.username;
       const embed = new EmbedBuilder()
         .setColor('#0099ff')
         .setTitle(`🎲 Roll Statistics for ${displayName}`)
