@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, REST, Routes, PermissionFlagsBits } = require('discord.js');
 const commands = require('./commands');
 const db = require('./database/DBController');
 
