@@ -3,7 +3,10 @@ const { Pool } = require('pg');
 class DBController {
         constructor() {
         this.pool = new Pool({
-            connectionString: process.env.DATABASE_URL || process.env.Postgres_DATABASE_URL
+            connectionString: process.env.DATABASE_URL || process.env.Postgres_DATABASE_URL,
+            max: 20, 
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 2000,
         });
     }
 
