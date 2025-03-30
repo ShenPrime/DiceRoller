@@ -222,14 +222,14 @@ Crit %: ${diceStat.crit_percentage}%`,
   try {
     // Update roll statistics in database
     if (parsed.type === 'advantage' || parsed.type === 'disadvantage') {
-      await db.updateRollStats(interaction.user.id, 20, result);
+      await db.updateRollStats(interaction.user.id, interaction.guildId, 20, result);
     } else if (!parsed.keepHighest) {
       for (const roll of rolls) {
-        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+        await db.updateRollStats(interaction.user.id, interaction.guildId, parsed.sides, roll);
       }
     } else {
       for (const roll of rolls.slice(0, parsed.keepHighest)) {
-        await db.updateRollStats(interaction.user.id, parsed.sides, roll);
+        await db.updateRollStats(interaction.user.id, interaction.guildId, parsed.sides, roll);
       }
     }
 
