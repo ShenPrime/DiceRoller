@@ -220,6 +220,7 @@ class DBController {
         const deleteServerOverallStats = `DELETE FROM ${schemaPrefix}user_overall_stats WHERE server_id = $1;`;
         const deletePublicDiceStats = `DELETE FROM user_dice_stats WHERE server_id = $1;`;
         const deletePublicOverallStats = `DELETE FROM user_overall_stats WHERE server_id = $1;`;
+        const dropSchema = `DROP SCHEMA IF EXISTS server_${serverId} CASCADE;`;
 
         await Promise.all([
             this.query(deleteServerDiceStats, [serverId]),
@@ -227,6 +228,12 @@ class DBController {
             this.query(deletePublicDiceStats, [serverId]),
             this.query(deletePublicOverallStats, [serverId])
         ]);
+        
+        try {
+            await this.query(dropSchema);
+        } catch (error) {
+            console.error(`Error dropping schema for server ${serverId}:`, error);
+        }
     }
 
     async isServerInitialized(serverId) {
