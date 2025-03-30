@@ -109,7 +109,7 @@ client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === 'stats') {
     const targetUser = interaction.options.getUser('user') || interaction.user;
     try {
-      const stats = await db.getUserStats(targetUser.id);
+      const stats = await db.getUserStats(targetUser.id, interaction.guildId);
       
       if (!stats.overallStats) {
         return interaction.reply({ content: `No roll statistics found for ${targetUser.username}`, ephemeral: true });
