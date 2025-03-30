@@ -116,6 +116,45 @@ class DBController {
         }
     }
 
+    async getLeaderboard(limit = 5) {
+        const overallLeaderboard = `
+            SELECT 
+                user_id,
+                total_rolls,
+                total_crits,
+                ROUND((total_value::float / total_possible_value * 100)::numeric, 2) as overall_roll_percentage,
+                ROUND((total_crits::float / total_rolls * 100)::numeric, 2) as overall_crit_percentage
+            FROM user_overall_stats
+            WHERE total_rolls > 0
+            ORDER BY overall_roll_percentage DESC, total_rolls DESC
+            LIMIT $1;
+        `;
+
+        const diceLeaderboards = `
+            SELECT 
+                user_id,
+                dice_type,
+                total_rolls,
+                total_crits,
+                ROUND((total_value::float / (dice_type * total_rolls) * 100)::numeric, 2) as roll_percentage,
+                ROUND((total_crits::float / total_rolls * 100)::numeric, 2) as crit_percentage
+            FROM user_dice_stats
+            WHERE total_rolls > 0
+            ORDER BY roll_percentage DESC, total_rolls DESC
+            LIMIT $1;
+        `;
+
+        const [overallResults, diceResults] = await Promise.all([
+            this.query(overallLeaderboard, [limit]),
+            this.query(diceLeaderboards, [limit])
+        ]);
+
+        return {
+            overallLeaderboard: overallResults.rows,
+            diceLeaderboard: diceResults.rows
+        };
+    }
+
     async close() {
         await this.pool.end();
     }

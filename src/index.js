@@ -63,6 +63,58 @@ function parseRollCommand(command) {
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  if (interaction.commandName === 'leaderboard') {
+    const limit = interaction.options.getInteger('limit') || 5;
+    try {
+      const leaderboards = await db.getLeaderboard(limit);
+      
+      const embed = new EmbedBuilder()
+        .setColor('#0099ff')
+        .setTitle('🏆 Dice Rolling Leaderboard')
+        .setDescription(`Top ${limit} Dice Rollers`);
+
+      // Overall Leaderboard
+      let overallField = '';
+      for (const [index, stats] of leaderboards.overallLeaderboard.entries()) {
+        const user = await client.users.fetch(stats.user_id);
+        overallField += `${index + 1}. ${user.username}\n`
+          + `Rolls: ${stats.total_rolls} | Crits: ${stats.total_crits}\n`
+          + `Roll %: ${stats.overall_roll_percentage}% | Crit %: ${stats.overall_crit_percentage}%\n\n`;
+      }
+      embed.addFields({ name: '📊 Overall Rankings', value: overallField || 'No data available' });
+
+      // Dice-specific Leaderboard
+      const diceLeaderboards = {};
+      for (const entry of leaderboards.diceLeaderboard) {
+        if (!diceLeaderboards[entry.dice_type]) {
+          diceLeaderboards[entry.dice_type] = [];
+        }
+        diceLeaderboards[entry.dice_type].push(entry);
+      }
+
+      for (const [diceType, entries] of Object.entries(diceLeaderboards)) {
+        let diceField = '';
+        for (const [index, entry] of entries.entries()) {
+          const user = await client.users.fetch(entry.user_id);
+          diceField += `${index + 1}. ${user.username}\n`
+            + `Rolls: ${entry.total_rolls} | Crits: ${entry.total_crits}\n`
+            + `Roll %: ${entry.roll_percentage}% | Crit %: ${entry.crit_percentage}%\n\n`;
+        }
+        embed.addFields({
+          name: `🎲 d${diceType} Rankings`,
+          value: diceField || 'No data available',
+          inline: true
+        });
+      }
+
+      await interaction.reply({ embeds: [embed] });
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      await interaction.reply({ content: 'There was an error fetching the leaderboard!', ephemeral: true });
+    }
+    return;
+  }
+
   if (interaction.commandName === 'stats') {
     const targetUser = interaction.options.getUser('user') || interaction.user;
     try {
